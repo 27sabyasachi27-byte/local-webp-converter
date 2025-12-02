@@ -1,0 +1,5 @@
+{
+  "name": "Secure WebP Converter",
+  "description": "A secure, client-side bulk image to WebP converter. No server uploads required.",
+  "requestFramePermissions": []
+}
