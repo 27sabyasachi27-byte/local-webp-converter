@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import DropZone from './components/DropZone';
 import Settings from './components/Settings';
@@ -5,6 +6,7 @@ import ImageRow from './components/ImageRow';
 import AdUnit from './components/AdUnit';
 import Toast from './components/Toast';
 import Tooltip from './components/Tooltip';
+import AboutModal from './components/AboutModal';
 import { ProcessedImage } from './types';
 import JSZip from 'jszip';
 
@@ -12,6 +14,7 @@ const App: React.FC = () => {
   const [images, setImages] = useState<ProcessedImage[]>([]);
   const [globalQuality, setGlobalQuality] = useState(0.8);
   const [showToast, setShowToast] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   // Use a ref to access the latest images state in event listeners without stale closures
   const imagesRef = useRef(images);
@@ -80,25 +83,25 @@ const App: React.FC = () => {
     const completedImages = currentImages.filter(img => img.status === 'completed' && img.webpBlob);
     if (completedImages.length === 0) return;
 
-    const zip = new JSZip();
-    const usedNames = new Set<string>();
-
-    completedImages.forEach(img => {
-      let baseName = img.originalFile.name.replace(/\.[^/.]+$/, "");
-      let fileName = `${baseName}.webp`;
-      let counter = 1;
-
-      // Ensure unique filenames within the zip
-      while (usedNames.has(fileName)) {
-        fileName = `${baseName}_${counter}.webp`;
-        counter++;
-      }
-      
-      usedNames.add(fileName);
-      zip.file(fileName, img.webpBlob as Blob);
-    });
-
     try {
+      const zip = new JSZip();
+      const usedNames = new Set<string>();
+
+      completedImages.forEach(img => {
+        let baseName = img.originalFile.name.replace(/\.[^/.]+$/, "");
+        let fileName = `${baseName}.webp`;
+        let counter = 1;
+
+        // Ensure unique filenames within the zip
+        while (usedNames.has(fileName)) {
+          fileName = `${baseName}_${counter}.webp`;
+          counter++;
+        }
+        
+        usedNames.add(fileName);
+        zip.file(fileName, img.webpBlob as Blob);
+      });
+
       const content = await zip.generateAsync({ type: "blob" });
       const url = URL.createObjectURL(content);
       const link = document.createElement('a');
@@ -110,7 +113,7 @@ const App: React.FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error creating zip:", error);
-      alert("Failed to create zip file.");
+      alert("Failed to create zip file. Please try downloading images individually.");
     }
   }, []);
 
@@ -146,6 +149,9 @@ const App: React.FC = () => {
       
       // Ignore if modifier keys are pressed (e.g. Ctrl+S to save page)
       if (e.ctrlKey || e.metaKey || e.altKey) return;
+      
+      // Ignore if modal is open
+      if (isAboutOpen) return;
 
       const key = e.key.toLowerCase();
 
@@ -164,7 +170,7 @@ const App: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleStartConversion, handleDownloadAll, handleClearCompleted]);
+  }, [handleStartConversion, handleDownloadAll, handleClearCompleted, isAboutOpen]);
 
   // --- Logic for Toast Notification ---
   const isProcessing = images.some(img => img.status === 'pending' || img.status === 'converting');
@@ -197,35 +203,44 @@ const App: React.FC = () => {
       {/* Navigation / Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-             <Tooltip content="GovTech Secure Processing Engine" position="bottom">
-               <div className="bg-[#005ea2] p-1.5 rounded flex items-center justify-center cursor-help">
-                  {/* Shield + Image Icon Combination */}
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-               </div>
-             </Tooltip>
+          <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => window.location.reload()}>
+             {/* Custom Logo SVG */}
+             <svg className="w-10 h-10 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Shield Base */}
+                <path d="M20.0001 2L5.00006 7.625V19.8125C5.00006 29.0812 11.3751 37.6687 20.0001 40C28.6251 37.6687 35.0001 29.0812 35.0001 19.8125V7.625L20.0001 2Z" fill="#005ea2"/>
+                {/* File Icon Document */}
+                <path d="M26.25 12.5H13.75C13.0625 12.5 12.5 13.0625 12.5 13.75V28.75C12.5 29.4375 13.0625 30 13.75 30H26.25C26.9375 30 27.5 29.4375 27.5 28.75V13.75C27.5 13.0625 26.9375 12.5 26.25 12.5Z" fill="#F9FAFB" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Image Inside File */}
+                <path d="M27.5 25L23.125 20L19.375 24.375L16.875 21.875L12.5 26.25" stroke="#374151" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="17.5" cy="17.5" r="1.5" fill="#374151"/>
+             </svg>
+             
              <div>
-               <h1 className="text-xl font-bold tracking-tight text-[#1b1b1b] leading-tight">
+               <div className="text-2xl font-bold tracking-tight text-[#005ea2] leading-none group-hover:opacity-90 transition-opacity">
                  LocalWebP
-               </h1>
-               <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wider leading-none">
-                 Secure Bulk Image Converter
-               </p>
+               </div>
              </div>
           </div>
           
-          <Tooltip content="Verified: Files never leave your browser" position="bottom">
-            <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full cursor-help">
-               <svg className="w-4 h-4 text-[#005ea2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-               </svg>
-              <span className="text-xs font-semibold text-[#005ea2] hidden sm:inline">
-                100% Private & Secure
-              </span>
-            </div>
-          </Tooltip>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setIsAboutOpen(true)}
+              className="text-sm font-medium text-gray-600 hover:text-[#005ea2] transition-colors focus:outline-none"
+            >
+              About LocalWebP
+            </button>
+
+            <Tooltip content="Verified: Files never leave your browser" position="bottom">
+              <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full cursor-help">
+                 <svg className="w-4 h-4 text-[#005ea2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                 </svg>
+                <span className="text-xs font-semibold text-[#005ea2] hidden sm:inline">
+                  100% Private & Secure
+                </span>
+              </div>
+            </Tooltip>
+          </div>
         </div>
       </header>
 
@@ -234,16 +249,16 @@ const App: React.FC = () => {
         <div className="bg-[#f0f9ff] border-b border-blue-100">
            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
              <div className="text-center max-w-3xl mx-auto">
-               <h2 className="text-3xl font-extrabold text-[#1b1b1b] sm:text-4xl mb-4">
-                 LocalWebP: Free Bulk WebP Converter
-               </h2>
+               <h1 className="text-3xl font-extrabold text-[#1b1b1b] sm:text-4xl mb-4">
+                 WebP Converter: Bulk JPG & PNG to WebP
+               </h1>
                <p className="text-lg text-gray-700 font-medium">
-                 Convert unlimited JPG & PNG images to WebP instantly. 
+                 Free, Secure, & Offline tool to fix Core Web Vitals.
                  <br className="hidden sm:block" />
-                 <span className="text-[#005ea2]">100% Client-Side & Private.</span>
+                 <span className="text-[#005ea2]">100% Client-Side Privacy.</span>
                </p>
                <p className="mt-4 text-sm text-gray-500 max-w-2xl mx-auto">
-                 Private & Secure: Photos are processed locally on your device's CPU. 
+                 Photos are processed locally on your device's CPU. 
                  No uploads. No cloud servers. No data leaks.
                </p>
              </div>
@@ -349,15 +364,15 @@ const App: React.FC = () => {
 
               <div className="space-y-4">
                 {images.length === 0 ? (
-                  <div className="bg-white rounded-lg border border-dashed border-gray-300 p-12 text-center h-[300px] flex flex-col items-center justify-center">
-                    <div className="bg-blue-50 p-4 rounded-full mb-4">
-                      <svg className="h-10 w-10 text-[#005ea2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                  <div className="bg-white rounded-lg border border-dashed border-gray-300 p-8 text-center min-h-[320px] flex flex-col items-center justify-center">
+                    <div className="mb-4">
+                       <AdUnit width={300} height={250} label="Ad Space" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900">No images yet</h3>
-                    <p className="mt-2 text-sm text-gray-500 max-w-xs">
-                      Drag and drop your JPG or PNG files here to start converting them to WebP.
+                    <p className="text-gray-500 font-medium">
+                      Results Area
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Converted files will appear here
                     </p>
                   </div>
                 ) : (
@@ -372,7 +387,7 @@ const App: React.FC = () => {
                 )}
               </div>
 
-              {/* Sidebar Ad */}
+              {/* Sidebar Ad (Shows at bottom of results list on mobile/desktop) */}
               <div className="mt-8 flex justify-center lg:justify-end">
                 <AdUnit width={300} height={250} label="Sidebar Ad" />
               </div>
@@ -381,14 +396,40 @@ const App: React.FC = () => {
         </div>
       </main>
 
+      {/* Bottom Ad Unit (New) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-center bg-[#f8fafc]">
+        <AdUnit width={300} height={250} label="Bottom Banner" className="hidden md:flex" />
+        <AdUnit width={320} height={100} label="Bottom Mobile" className="flex md:hidden" />
+      </div>
+
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} LocalWebP. A Secure GovTech Utility.
-          </p>
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-4">
+             <div>
+                <h4 className="font-semibold text-gray-900 mb-2">LocalWebP Utility</h4>
+                <p className="text-sm text-gray-500 max-w-sm">
+                  A high-performance PWA for bulk converting JPG and PNG images to WebP. 
+                  Optimized for government, enterprise, and SEO professionals.
+                </p>
+             </div>
+             <div className="md:text-right">
+               <h4 className="font-semibold text-gray-900 mb-2">Quick Links</h4>
+               <ul className="text-sm text-gray-500 space-y-1">
+                 <li><button onClick={() => setIsAboutOpen(true)} className="hover:text-[#005ea2]">Fix Core Web Vitals</button></li>
+                 <li><button onClick={() => setIsAboutOpen(true)} className="hover:text-[#005ea2]">Next-Gen Formats</button></li>
+                 <li><button onClick={() => setIsAboutOpen(true)} className="hover:text-[#005ea2]">JPG to WebP Guide</button></li>
+               </ul>
+             </div>
+          </div>
+          <div className="border-t border-gray-100 pt-6 text-center text-xs text-gray-400">
+            &copy; {new Date().getFullYear()} LocalWebP. 100% Client-Side. No Server Uploads.
+          </div>
         </div>
       </footer>
+
+      {/* About Modal */}
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
 
       {/* Summary Toast */}
       {showToast && (

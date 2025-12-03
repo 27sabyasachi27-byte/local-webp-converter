@@ -3,13 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LocalWebP | Secure Bulk Image to WebP Converter (No Uploads)</title>
-    <meta name="description" content="Convert unlimited JPG/PNG images to WebP instantly in your browser. LocalWebP is 100% private, free, and works offline. No server uploads." />
+    
+    <!-- Primary SEO -->
+    <title>WebP Converter | Bulk JPG & PNG to WebP (Secure & Free)</title>
+    <meta name="description" content="Convert unlimited JPG & PNG images to WebP locally. Fix Core Web Vitals & LCP scores instantly. 100% Private, Offline, & Free Bulk Image Converter." />
+    <meta name="keywords" content="webp converter, jpg to webp, png to webp, bulk image converter, offline converter, client-side, privacy focused, core web vitals, fix lcp, google pagespeed" />
+    <meta name="robots" content="index, follow" />
     
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="LocalWebP | Secure Bulk WebP Converter">
-    <meta property="og:description" content="Convert images to WebP locally. 100% Client-Side Privacy.">
+    <meta property="og:title" content="WebP Converter | Bulk JPG & PNG to WebP">
+    <meta property="og:description" content="Convert images to WebP locally. Fix Core Web Vitals. 100% Client-Side Privacy.">
+    <meta property="og:site_name" content="LocalWebP">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
@@ -17,25 +22,87 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- JSON-LD Schema -->
+    <!-- JSON-LD Schema for Rich Snippets -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "LocalWebP",
-      "operatingSystem": "Web Browser",
-      "applicationCategory": "MultimediaApplication",
-      "featureList": ["Bulk Conversion", "Client-Side Privacy", "Offline Capable", "Unlimited Batching"],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "1250"
-      }
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "LocalWebP",
+          "headline": "Free Bulk WebP Converter",
+          "operatingSystem": "Web Browser",
+          "applicationCategory": "MultimediaApplication",
+          "applicationSubCategory": "Image Processing",
+          "fileFormat": ["image/jpeg", "image/png", "image/webp"],
+          "featureList": ["Bulk Conversion", "Client-Side Privacy", "Offline Capable", "Unlimited Batching", "Core Web Vitals Optimization"],
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "1250"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How do I fix 'Serve images in next-gen formats'?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Use LocalWebP to convert your JPG and PNG images to WebP. WebP is a next-gen format recommended by Google PageSpeed Insights to improve LCP (Largest Contentful Paint) scores."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is LocalWebP free for commercial use?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, LocalWebP is 100% free for both personal and commercial projects. There are no daily limits or watermarks."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are my photos uploaded to a server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. LocalWebP runs entirely in your web browser using HTML5 Canvas technology. Your images are processed on your computer's CPU and never touch our servers."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to Convert JPG/PNG to WebP in Bulk",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "Upload Images",
+              "text": "Drag and drop your folder of JPG or PNG files into the LocalWebP upload zone."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Adjust Quality",
+              "text": "Set your desired compression quality (Default: 80%) to balance size and clarity."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Start Conversion",
+              "text": "Click 'Start Conversion' (or press 'S') to process files locally."
+            },
+            {
+              "@type": "HowToStep",
+              "name": "Download ZIP",
+              "text": "Click 'Download All' to get your optimized WebP images instantly."
+            }
+          ]
+        }
+      ]
     }
     </script>
 
@@ -129,14 +196,36 @@
         0% { transform: translate(0, 0) scale(1); }
         100% { transform: translate(30px, 50px) scale(1.05); }
       }
+      
+      @keyframes scaleIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
 
-      /* FAQ Styles */
+      /* FAQ Styles & ID for Anchors */
+      #faq {
+        scroll-margin-top: 100px;
+      }
       details > summary {
         list-style: none;
         cursor: pointer;
       }
       details > summary::-webkit-details-marker {
         display: none;
+      }
+      
+      /* Ad Sidebar Style */
+      .ad-sidebar {
+        width: 100%;
+        max-width: 300px; /* Prevents it from stretching weirdly on desktop */
+        height: 250px;    /* Taller standard size */
+        background: #f1f3f4;
+        border: 1px dashed #ccc;
+        margin: 2rem auto; /* Centers it horizontally */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #888;
       }
     </style>
   <script type="importmap">
@@ -157,106 +246,5 @@
       <div class="bg-dots"></div>
     </div>
     <div id="root"></div>
-
-    <!-- SEO Content Section -->
-    <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-[#1b1b1b]">
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-        <div>
-          <h2 class="text-2xl font-bold mb-4 text-[#005ea2]">Why use LocalWebP for Image Conversion?</h2>
-          <p class="mb-4 text-gray-700 leading-relaxed">
-            LocalWebP is designed for privacy-conscious users and professionals who need to convert images without risking data leaks. Unlike standard converters that upload your photos to a cloud server, <strong>LocalWebP processes everything inside your web browser</strong>.
-          </p>
-          <ul class="list-disc pl-5 space-y-2 text-gray-700">
-            <li><strong>Zero Server Uploads:</strong> Your images never leave your device.</li>
-            <li><strong>Unlimited Batching:</strong> Convert hundreds of images at once.</li>
-            <li><strong>Offline Capable:</strong> Works without an internet connection once loaded.</li>
-            <li><strong>Free Forever:</strong> No premium tiers or hidden costs.</li>
-          </ul>
-        </div>
-        
-        <div>
-          <h2 class="text-2xl font-bold mb-4 text-[#005ea2]">How to Convert JPG/PNG to WebP in Bulk</h2>
-          <ol class="list-decimal pl-5 space-y-3 text-gray-700">
-            <li><strong>Drag & Drop:</strong> Drag your folder of JPG or PNG files into the "Upload Images" zone above.</li>
-            <li><strong>Adjust Quality:</strong> Use the "Compression Quality" slider to balance file size and image fidelity (Default is 80%).</li>
-            <li><strong>Start Conversion:</strong> Click the green "Start Conversion" button.</li>
-            <li><strong>Download:</strong> Click "Download All" to save a ZIP file of your optimized WebP images.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="mb-16">
-        <h2 class="text-2xl font-bold mb-6 text-[#005ea2]">WebP vs. JPG: SEO Performance Comparison</h2>
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Format</th>
-                <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Size (Avg)</th>
-                <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality</th>
-                <th class="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Google PageSpeed</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr>
-                <td class="py-4 px-6 text-sm font-medium text-gray-900">Original JPG</td>
-                <td class="py-4 px-6 text-sm text-gray-500">2.5 MB</td>
-                <td class="py-4 px-6 text-sm text-gray-500">High</td>
-                <td class="py-4 px-6 text-sm text-red-500">Slow</td>
-              </tr>
-              <tr>
-                <td class="py-4 px-6 text-sm font-medium text-gray-900">Optimized WebP</td>
-                <td class="py-4 px-6 text-sm text-green-600 font-bold">450 KB</td>
-                <td class="py-4 px-6 text-sm text-gray-500">High (Lossless-like)</td>
-                <td class="py-4 px-6 text-sm text-green-600">Fast (Preferred)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div>
-        <h2 id="faq" class="text-2xl font-bold mb-6 text-[#005ea2] scroll-mt-24">Frequently Asked Questions</h2>
-        <div class="space-y-4">
-          <details class="group bg-white rounded-lg border border-gray-200 shadow-sm">
-            <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4">
-              <span>Is LocalWebP free?</span>
-              <span class="transition group-open:rotate-180">
-                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-              </span>
-            </summary>
-            <div class="text-gray-700 mt-0 px-4 pb-4">
-              Yes, LocalWebP is 100% free to use for both personal and commercial projects. There are no daily limits.
-            </div>
-          </details>
-
-          <details class="group bg-white rounded-lg border border-gray-200 shadow-sm">
-            <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4">
-              <span>Are my photos uploaded to a server?</span>
-              <span class="transition group-open:rotate-180">
-                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-              </span>
-            </summary>
-            <div class="text-gray-700 mt-0 px-4 pb-4">
-              No. LocalWebP runs entirely in your web browser using HTML5 Canvas technology. Your images are processed on your computer's CPU and never touch our servers.
-            </div>
-          </details>
-
-          <details class="group bg-white rounded-lg border border-gray-200 shadow-sm">
-            <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4">
-              <span>Does this work offline?</span>
-              <span class="transition group-open:rotate-180">
-                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-              </span>
-            </summary>
-            <div class="text-gray-700 mt-0 px-4 pb-4">
-              Yes! Once the page is loaded, you can disconnect from the internet and continue converting images securely.
-            </div>
-          </details>
-        </div>
-      </div>
-
-    </article>
   </body>
 </html>
